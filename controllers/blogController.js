@@ -49,7 +49,9 @@ const viewAllBlog = async (req, res) => {
       );
       return res.send(apiResponse);
     }
-    let apiResponse = response.generate(false, "All blogs fetched", 200, blogs);
+    let apiResponse = response.generate(false, "All blogs fetched", 200, {
+      blogs: blogs
+    });
     res.send(apiResponse);
   } catch (err) {
     console.log(err);
