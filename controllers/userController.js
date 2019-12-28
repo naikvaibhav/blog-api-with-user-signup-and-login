@@ -93,8 +93,9 @@ let signinUser = async (req, res) => {
     }
     let apiResponse = response.generate(false, "Logged in", 200, user);
     const token = jwt.sign({ _id: user._id }, appConfig.secretKey);
-    res.setHeader("auth-token", token);
-    res.send(apiResponse);
+    // res.setHeader("auth-token", token);
+    // res.send(apiResponse);
+    res.json({'token':token,'result':apiResponse})
   } catch (err) {
     console.log(err);
     let apiResponse = response.generate(true, err.message, 500, null);

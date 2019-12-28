@@ -99,9 +99,7 @@ const viewEachBlog = async (req, res) => {
       );
       return res.send(apiResponse);
     }
-    console.log(eachBlog.views);
     eachBlog.views += 1;
-    console.log(eachBlog.views);
     await eachBlog.save();
     let apiResponse = response.generate(false, "Blog found", 200, eachBlog);
     res.send(apiResponse);

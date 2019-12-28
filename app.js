@@ -4,7 +4,7 @@ let path = require("path");
 let cookieParser = require("cookie-parser");
 let logger = require("morgan");
 const mongoose = require("mongoose");
-
+const cors = require("cors");
 const appConfig = require("./config/appConfig");
 
 let indexRouter = require("./routes/index");
@@ -16,8 +16,9 @@ let app = express();
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
-
+app.use(cors());
 app.use(logger("dev"));
+// app.use(globalRouteLoggerMiddleware.logIp);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
