@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const appConfig = require("./../config/appConfig");
 
 const verifyToken = (req, res, next) => {
-  const token = req.header("auth-token");
+  const token = req.header("authToken");
   if (!token) {
     return res.status(400).send("Access denied");
   }

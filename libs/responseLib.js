@@ -1,8 +1,8 @@
 let generate = (err, msg, status, data) => {
   let response = {
     error: err,
-    message: msg,
     status: status,
+    message: msg,
     data: data
   };
   return response;

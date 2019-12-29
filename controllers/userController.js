@@ -1,4 +1,5 @@
 const UserModel = require("./../models/User");
+const AuthModel = require("./../models/Auth");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const appConfig = require("./../config/appConfig");
@@ -70,7 +71,7 @@ let signinUser = async (req, res) => {
   }
   //check if user exists
   try {
-    const user = await UserModel.findOne({ email: req.body.email });
+    let user = await UserModel.findOne({ email: req.body.email });
     if (!user) {
       let apiResponse = response.generate(
         true,
@@ -91,11 +92,23 @@ let signinUser = async (req, res) => {
       let apiResponse = response.generate(true, "Inavlid password", 400, null);
       return res.send(apiResponse);
     }
-    let apiResponse = response.generate(false, "Logged in", 200, user);
     const token = jwt.sign({ _id: user._id }, appConfig.secretKey);
-    // res.setHeader("auth-token", token);
-    // res.send(apiResponse);
-    res.json({'token':token,'result':apiResponse})
+    if (!token) {
+      let apiResponse = response.generate(
+        true,
+        "Failed to generate token",
+        500,
+        null
+      );
+      return res.send(apiResponse);
+    }
+    res.setHeader("authToken", token);
+    //remove password property from the output
+    user.password = undefined;
+    user.token = token;
+    let result = await saveToken(user);
+    let apiResponse = response.generate(false, "Login success", 200, result);
+    res.send(apiResponse);
   } catch (err) {
     console.log(err);
     let apiResponse = response.generate(true, err.message, 500, null);
@@ -103,7 +116,43 @@ let signinUser = async (req, res) => {
   }
 };
 
+let saveToken = tokenDetails => {
+  return new Promise((resolve, reject) => {
+    let tokenExist = AuthModel.findOne({ _id: tokenDetails._id });
+    if (!tokenExist) {
+      let apiResponse = response.generate(
+        true,
+        "Failed to Generate Token",
+        500,
+        null
+      );
+      reject(apiResponse);
+    }
+
+    let newAuthToken = new AuthModel({
+      authToken: tokenDetails.token,
+      tokenSecret: tokenDetails.tokenSecret,
+      tokenGenerationTime: Date.now()
+    });
+    newAuthToken
+      .save()
+      .then(data => resolve(data))
+      .catch(err => console.log(err));
+  });
+};
+
+let logout = async (req, res) => {
+  let logOutUser = AuthModel.remove({ authToken: req.user });
+  if (!logOutUser) {
+    let apiResponse = response.generate(true, "Token doesnt match", 500, null);
+    res.send(apiResponse);
+  }
+  let apiResponse = response.generate(false, "Logout sucess", 200, null);
+  res.send(apiResponse);
+};
+
 module.exports = {
   registerUser: registerUser,
-  signinUser: signinUser
+  signinUser: signinUser,
+  logout: logout
 };
