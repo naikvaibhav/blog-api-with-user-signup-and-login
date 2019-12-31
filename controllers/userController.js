@@ -92,7 +92,9 @@ let signinUser = async (req, res) => {
       let apiResponse = response.generate(true, "Inavlid password", 400, null);
       return res.send(apiResponse);
     }
-    const token = jwt.sign({ _id: user._id }, appConfig.secretKey);
+    //remove password property from the output
+    user.password = undefined;
+    const token = jwt.sign({ user }, appConfig.secretKey);
     if (!token) {
       let apiResponse = response.generate(
         true,
@@ -103,12 +105,10 @@ let signinUser = async (req, res) => {
       return res.send(apiResponse);
     }
     res.setHeader("authToken", token);
-    //remove password property from the output
-    user.password = undefined;
-    user.token = token;
-    let result = await saveToken(user);
-    let apiResponse = response.generate(false, "Login success", 200, result);
-    res.send(apiResponse);
+    // user.token = token;
+    // let result = await saveToken(user);
+    // let apiResponse = response.generate(false, "Login success", 200, token);
+    res.json(token);
   } catch (err) {
     console.log(err);
     let apiResponse = response.generate(true, err.message, 500, null);
@@ -116,30 +116,30 @@ let signinUser = async (req, res) => {
   }
 };
 
-let saveToken = tokenDetails => {
-  return new Promise((resolve, reject) => {
-    let tokenExist = AuthModel.findOne({ _id: tokenDetails._id });
-    if (!tokenExist) {
-      let apiResponse = response.generate(
-        true,
-        "Failed to Generate Token",
-        500,
-        null
-      );
-      reject(apiResponse);
-    }
+// let saveToken = tokenDetails => {
+//   return new Promise((resolve, reject) => {
+//     let tokenExist = AuthModel.findOne({ _id: tokenDetails._id });
+//     if (!tokenExist) {
+//       let apiResponse = response.generate(
+//         true,
+//         "Failed to Generate Token",
+//         500,
+//         null
+//       );
+//       reject(apiResponse);
+//     }
 
-    let newAuthToken = new AuthModel({
-      authToken: tokenDetails.token,
-      tokenSecret: tokenDetails.tokenSecret,
-      tokenGenerationTime: Date.now()
-    });
-    newAuthToken
-      .save()
-      .then(data => resolve(data))
-      .catch(err => console.log(err));
-  });
-};
+//     let newAuthToken = new AuthModel({
+//       authToken: tokenDetails.token,
+//       tokenSecret: tokenDetails.tokenSecret,
+//       tokenGenerationTime: Date.now()
+//     });
+//     newAuthToken
+//       .save()
+//       .then(data => resolve(data))
+//       .catch(err => console.log(err));
+//   });
+// };
 
 let logout = async (req, res) => {
   let logOutUser = AuthModel.remove({ authToken: req.user });

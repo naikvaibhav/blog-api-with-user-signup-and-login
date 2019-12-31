@@ -35,6 +35,15 @@ const createBlog = async (req, res) => {
     let apiResponse = response.generate(true, err.message, 500, null);
     res.send(apiResponse);
   }
+  // newBlog.save().then(data=>{let apiResponse = response.generate(
+  //   false,
+  //   "Blog created successfully",
+  //   201,
+  //   data
+  // )
+  // res.send(apiResponse)}).catch(err=>{console.log(err);
+  //   let apiResponse = response.generate(true, err.message, 500, null);
+  //   res.send(apiResponse);})
 };
 
 const viewAllBlog = async (req, res) => {
