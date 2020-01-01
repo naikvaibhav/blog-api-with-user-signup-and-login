@@ -89,13 +89,14 @@ let signinUser = async (req, res) => {
     );
 
     if (!validPassword) {
-      let apiResponse = response.generate(true, "Inavlid password", 400, null);
+      let apiResponse = response.generate(true, "Invalid password", 400, null);
       return res.send(apiResponse);
     }
     //remove password property from the output
     user.password = undefined;
-    const token = jwt.sign({ user }, appConfig.secretKey);
-    if (!token) {
+    const token = jwt.sign({ userInfo: user }, appConfig.secretKey);
+    user.token = token;
+    if (!user.token) {
       let apiResponse = response.generate(
         true,
         "Failed to generate token",
@@ -103,12 +104,10 @@ let signinUser = async (req, res) => {
         null
       );
       return res.send(apiResponse);
+    } else {
+      res.setHeader("authToken", token);
+      res.send(user);
     }
-    res.setHeader("authToken", token);
-    // user.token = token;
-    // let result = await saveToken(user);
-    // let apiResponse = response.generate(false, "Login success", 200, token);
-    res.json(token);
   } catch (err) {
     console.log(err);
     let apiResponse = response.generate(true, err.message, 500, null);

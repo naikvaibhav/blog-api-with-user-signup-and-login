@@ -12,7 +12,8 @@ const userSchema = new mongoose.Schema({
   createdOn: {
     type: Date,
     default: Date.now()
-  }
+  },
+  token: ""
 });
 
 module.exports = mongoose.model("User", userSchema);

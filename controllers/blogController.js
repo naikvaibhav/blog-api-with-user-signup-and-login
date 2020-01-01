@@ -13,7 +13,8 @@ const createBlog = async (req, res) => {
     category: req.body.category,
     author: req.body.author,
     createdOn: today,
-    lastModified: today
+    lastModified: today,
+    user: req.user.userInfo
   });
   let tags =
     req.body.tags != undefined && req.body.tags != null && req.body.tags != ""
@@ -32,7 +33,7 @@ const createBlog = async (req, res) => {
     res.send(apiResponse);
   } catch (err) {
     console.log(err);
-    let apiResponse = response.generate(true, err.message, 500, null);
+    let apiResponse = response.generate(true, "Access deny", 500, null);
     res.send(apiResponse);
   }
   // newBlog.save().then(data=>{let apiResponse = response.generate(
@@ -134,7 +135,7 @@ const editBlog = async (req, res) => {
       false,
       "Blog edited successfully",
       201,
-      editBlog
+      options
     );
     res.send(apiResponse);
   } catch (err) {

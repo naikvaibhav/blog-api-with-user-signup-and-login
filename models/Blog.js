@@ -41,7 +41,8 @@ const blogSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  tags: []
+  tags: [],
+  user: {}
 });
 
 module.exports = mongoose.model("Blog", blogSchema);
