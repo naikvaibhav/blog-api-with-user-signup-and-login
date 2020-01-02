@@ -7,6 +7,7 @@ const { registerValidation } = require("../libs/validation");
 const { loginValidation } = require("../libs/validation");
 // const validation = require("./../libs/validation");
 let response = require("./../libs/responseLib");
+const mongoose = require("mongoose");
 
 let registerUser = async (req, res) => {
   //validate user
@@ -37,6 +38,7 @@ let registerUser = async (req, res) => {
 
     //create a new user
     const newUser = new UserModel({
+      _id: new mongoose.Types.ObjectId(),
       email: req.body.email,
       password: hashPassword
     });

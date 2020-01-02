@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
-
-const blogSchema = new mongoose.Schema({
+const Schema = mongoose.Schema;
+const blogSchema = new Schema({
+  _id: Schema.Types.ObjectId,
   blogId: {
     type: String,
     unique: true
@@ -41,8 +42,13 @@ const blogSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  tags: [],
-  user: {}
+  tags: {
+    type: Array
+  },
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "User"
+  }
 });
 
 module.exports = mongoose.model("Blog", blogSchema);

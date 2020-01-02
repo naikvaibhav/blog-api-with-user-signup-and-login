@@ -1,11 +1,13 @@
 const BlogModel = require("./../models/Blog");
 const response = require("./../libs/responseLib");
 const shortid = require("shortid");
+const mongoose = require("mongoose");
 
 const createBlog = async (req, res) => {
   let blogId = shortid.generate();
   let today = Date.now();
   let newBlog = new BlogModel({
+    _id: new mongoose.Types.ObjectId(),
     blogId: blogId,
     title: req.body.title,
     description: req.body.description,
@@ -14,7 +16,7 @@ const createBlog = async (req, res) => {
     author: req.body.author,
     createdOn: today,
     lastModified: today,
-    user: req.user.userInfo
+    user: req.user.userInfo._id
   });
   let tags =
     req.body.tags != undefined && req.body.tags != null && req.body.tags != ""
@@ -72,24 +74,35 @@ const viewAllBlog = async (req, res) => {
 
 const deleteBlog = async (req, res) => {
   try {
-    let deleteBlog = await BlogModel.deleteOne({ blogId: req.params.blogId });
-    console.log("deleteBlog", deleteBlog);
-    if (!deleteBlog) {
+    let getUser = await BlogModel.findOne({ blogId: req.params.blogId });
+    if (getUser.user == req.user.userInfo._id) {
+      let deleteBlog = await BlogModel.deleteOne({ blogId: req.params.blogId });
+      console.log("deleteBlog", deleteBlog);
+      if (!deleteBlog) {
+        let apiResponse = response.generate(
+          true,
+          "No blog found to be deleted",
+          400,
+          null
+        );
+        return res.send(apiResponse);
+      }
+      let apiResponse = response.generate(
+        false,
+        "Blog delted successfully",
+        200,
+        getUser
+      );
+      res.send(apiResponse);
+    } else {
       let apiResponse = response.generate(
         true,
-        "No blog found to be deleted",
-        400,
+        "The signed-in user is not the author of the blog",
+        500,
         null
       );
-      return res.send(apiResponse);
+      res.send(apiResponse);
     }
-    let apiResponse = response.generate(
-      false,
-      "Blog delted successfully",
-      200,
-      deleteBlog
-    );
-    res.send(apiResponse);
   } catch (err) {
     console.log(err);
     let apiResponse = response.generate(true, err.message, 500, null);
@@ -123,21 +136,33 @@ const viewEachBlog = async (req, res) => {
 const editBlog = async (req, res) => {
   let options = req.body;
   try {
-    let editBlog = await BlogModel.update(
-      { blogId: req.params.blogId },
-      options
-    );
-    if (!editBlog) {
-      let apiResponse = response.generate(true, "No blog found", 400, null);
-      return res.send(apiResponse);
+    let getUser = await BlogModel.findOne({ blogId: req.params.blogId });
+    if (getUser.user == req.user.userInfo._id) {
+      let editBlog = await BlogModel.updateOne(
+        { blogId: req.params.blogId },
+        options
+      );
+      if (!editBlog) {
+        let apiResponse = response.generate(true, "No blog found", 400, null);
+        return res.send(apiResponse);
+      }
+
+      let apiResponse = response.generate(
+        false,
+        "Blog edited successfully",
+        201,
+        editBlog
+      );
+      res.send(apiResponse);
+    } else {
+      let apiResponse = response.generate(
+        true,
+        "The signed-in user is not the author of the blog",
+        500,
+        null
+      );
+      res.send(apiResponse);
     }
-    let apiResponse = response.generate(
-      false,
-      "Blog edited successfully",
-      201,
-      options
-    );
-    res.send(apiResponse);
   } catch (err) {
     console.log(err);
     let apiResponse = response.generate(true, err.message, 500, null);
