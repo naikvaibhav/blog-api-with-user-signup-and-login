@@ -16,6 +16,7 @@ const createBlog = async (req, res) => {
     author: req.body.author,
     createdOn: today,
     lastModified: today,
+    blogImage: "http://localhost:3001/uploads/" + req.file.filename,
     user: req.user.userInfo._id
   });
   let tags =

@@ -45,6 +45,9 @@ const blogSchema = new Schema({
   tags: {
     type: Array
   },
+  blogImage: {
+    type: String
+  },
   user: {
     type: Schema.Types.ObjectId,
     ref: "User"
