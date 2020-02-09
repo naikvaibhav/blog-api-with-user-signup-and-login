@@ -16,7 +16,7 @@ const createBlog = async (req, res) => {
     author: req.body.author,
     createdOn: today,
     lastModified: today,
-    blogImage: "http://localhost:3001/uploads/" + req.file.filename,
+    // blogImage: "http://localhost:3001/uploads/" + req.file.filename,
     user: req.user.userInfo._id
   });
   let tags =
@@ -177,7 +177,10 @@ const searchTerm = async (req, res) => {
     match.title = req.query.title;
   }
   if (req.query.author) {
-    match.author = req.query.author;
+    let author =
+      req.query.author.charAt(0).toUpperCase() + req.query.author.slice(1);
+    console.log(author);
+    match.author = author;
   }
   if (req.query.category) {
     match.category = req.query.category;

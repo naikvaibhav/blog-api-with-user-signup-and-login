@@ -67,4 +67,8 @@ mongoose.connection.on("open", function(err) {
   }
 });
 
+//listen to port
+app.listen(appConfig.port);
+console.log("Connected to port no:", appConfig.port);
+
 module.exports = app;
