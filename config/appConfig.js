@@ -1,15 +1,14 @@
 let appConfig = {};
+require("dotenv").config();
 
-appConfig.port = 3001;
+appConfig.port = process.env.port;
 appConfig.allowedCorsOrigin = "*";
 appConfig.env = "dev";
 appConfig.db = {
-  //   uri: "mongodb://127.0.0.1:27017/blogsApp",
-  uri:
-    "mongodb+srv://vaibhav:vaibhav@vncluster-dhl0q.mongodb.net/blogsApp?retryWrites=true&w=majority"
+  uri: process.env.db,
 };
 appConfig.apiVersion = "/api/v1";
-appConfig.secretKey = "cjcdcnjdddddddddddddjjeu@sfdknkfkffk";
+appConfig.secretKey = process.env.secretKey;
 
 module.exports = {
   port: appConfig.port,
@@ -17,5 +16,5 @@ module.exports = {
   environment: appConfig.env,
   db: appConfig.db,
   apiVersion: appConfig.apiVersion,
-  secretKey: appConfig.secretKey
+  secretKey: appConfig.secretKey,
 };

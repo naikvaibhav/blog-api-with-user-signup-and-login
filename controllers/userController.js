@@ -28,7 +28,7 @@ let registerUser = async (req, res) => {
     let apiResponse = response.generate(
       true,
       "Email already present",
-      400,
+      500,
       null
     );
     return res.send(apiResponse);

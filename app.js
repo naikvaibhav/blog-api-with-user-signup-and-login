@@ -29,12 +29,12 @@ app.use(appConfig.apiVersion + "/users", usersRouter);
 app.use(appConfig.apiVersion + "/blogs", blogRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
@@ -48,17 +48,17 @@ app.use(function(err, req, res, next) {
 let db = mongoose.connect(appConfig.db.uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  useCreateIndex: true
+  useCreateIndex: true,
 });
 
 // handling mongoose connection error
-mongoose.connection.on("error", function(err) {
+mongoose.connection.on("error", function (err) {
   console.log("database connection error");
   console.log(err);
 }); // end mongoose connection error
 
 // handling mongoose success event
-mongoose.connection.on("open", function(err) {
+mongoose.connection.on("open", function (err) {
   if (err) {
     console.log("database error");
     console.log(err);
